@@ -25,7 +25,8 @@ namespace trade_app.Forms
                 "AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME", conn);
             MySqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) cmbTable.Items.Add(r.GetString(0));
-            r.Close(); conn.Close();
+            r.Close();
+            conn.Close();
             if (cmbTable.Items.Count > 0) cmbTable.SelectedIndex = 0;
         }
 
@@ -48,12 +49,24 @@ namespace trade_app.Forms
                 if (ch == '"')
                 {
                     if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
-                    { cur = cur + '"'; i++; }
-                    else inQuotes = !inQuotes;
+                    {
+                        cur = cur + '"';
+                        i++;
+                    }
+                    else
+                    {
+                        inQuotes = !inQuotes;
+                    }
                 }
                 else if (ch == ',' && inQuotes == false)
-                { result.Add(cur); cur = ""; }
-                else cur = cur + ch;
+                {
+                    result.Add(cur);
+                    cur = "";
+                }
+                else
+                {
+                    cur = cur + ch;
+                }
             }
             result.Add(cur);
             return result.ToArray();
@@ -61,13 +74,24 @@ namespace trade_app.Forms
 
         private void btnImport_Click(object sender, EventArgs e)
         {
-            if (cmbTable.SelectedItem == null) { MessageBox.Show("Выберите таблицу."); return; }
+            if (cmbTable.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите таблицу.");
+                return;
+            }
             if (txtPath.Text == "" || File.Exists(txtPath.Text) == false)
-            { MessageBox.Show("Выберите CSV-файл."); return; }
+            {
+                MessageBox.Show("Выберите CSV-файл.");
+                return;
+            }
 
             string table = cmbTable.SelectedItem.ToString();
             string[] lines = File.ReadAllLines(txtPath.Text);
-            if (lines.Length < 2) { MessageBox.Show("Файл пуст."); return; }
+            if (lines.Length < 2)
+            {
+                MessageBox.Show("Файл пуст.");
+                return;
+            }
 
             string[] columns = SplitCsv(lines[0]);
             int count = 0;
@@ -86,7 +110,8 @@ namespace trade_app.Forms
                     {
                         MessageBox.Show("Строка " + (i + 1) + ": найдено " + values.Length +
                             " полей, ожидалось " + columns.Length + ".\n\n" + lines[i]);
-                        conn.Close(); return;
+                        conn.Close();
+                        return;
                     }
 
                     string cols = string.Join(",", columns);
@@ -113,7 +138,10 @@ namespace trade_app.Forms
                 conn.Close();
                 MessageBox.Show("Импортировано: " + count + " записей.");
             }
-            catch (Exception ex) { MessageBox.Show("Ошибка импорта:\n" + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка импорта:\n" + ex.Message);
+            }
         }
     }
 }

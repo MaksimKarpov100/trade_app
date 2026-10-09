@@ -12,18 +12,9 @@ namespace trade_app
         public string Photo;
         public int Stock;
 
-        public decimal TotalNoDiscount() 
-        { 
-            return Price * Quantity; 
-        }
-        public decimal TotalWithDiscount() 
-        { 
-            return Price * Quantity * (100 - Discount) / 100;
-        }
-        public decimal DiscountSum() 
-        { 
-            return TotalNoDiscount() - TotalWithDiscount(); 
-        }
+        public decimal TotalNoDiscount() { return Price * Quantity; }
+        public decimal TotalWithDiscount() { return Price * Quantity * (100 - Discount) / 100; }
+        public decimal DiscountSum() { return TotalNoDiscount() - TotalWithDiscount(); }
     }
 
     public static class Cart
@@ -35,39 +26,38 @@ namespace trade_app
         {
             for (int i = 0; i < Items.Count; i++)
             {
-                if (Items[i].Article == article) 
-                { 
-                    Items[i].Quantity += quantity; 
-                    return; 
+                if (Items[i].Article == article)
+                {
+                    Items[i].Quantity += quantity;
+                    return;
                 }
             }
 
             CartItem item = new CartItem();
-            item.Article = article; item.Name = name; item.Price = price;
-            item.Quantity = quantity; item.Discount = discount;
-            item.Photo = photo; item.Stock = stock;
+            item.Article = article;
+            item.Name = name;
+            item.Price = price;
+            item.Quantity = quantity;
+            item.Discount = discount;
+            item.Photo = photo;
+            item.Stock = stock;
             Items.Add(item);
         }
 
         public static void Remove(string article)
         {
             for (int i = 0; i < Items.Count; i++)
-                if (Items[i].Article == article) 
-                { 
-                    Items.RemoveAt(i); 
+            {
+                if (Items[i].Article == article)
+                {
+                    Items.RemoveAt(i);
                     return;
                 }
+            }
         }
 
-        public static void Clear() 
-        { 
-            Items.Clear();
-        }
-
-        public static int Count() 
-        {
-            return Items.Count; 
-        }
+        public static void Clear() { Items.Clear(); }
+        public static int Count() { return Items.Count; }
 
         public static decimal SumNoDiscount()
         {
@@ -93,7 +83,9 @@ namespace trade_app
         public static int DeliveryDays()
         {
             for (int i = 0; i < Items.Count; i++)
+            {
                 if (Items[i].Stock < 3) return 6;
+            }
             return 3;
         }
     }

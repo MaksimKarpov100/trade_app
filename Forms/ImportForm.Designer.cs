@@ -69,10 +69,12 @@
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
 
             this.ClientSize = new System.Drawing.Size(600, 230);
-            this.Controls.Add(this.picLogo); this.Controls.Add(this.lblTitle);
+            this.Controls.Add(this.picLogo);
+            this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.lblTable); this.Controls.Add(this.cmbTable);
             this.Controls.Add(this.lblCsv); this.Controls.Add(this.txtPath);
             this.Controls.Add(this.btnChoose); this.Controls.Add(this.btnImport);
+
             this.Text = "Импорт данных";
             this.Font = new System.Drawing.Font("Comic Sans MS", 10F);
             this.BackColor = System.Drawing.Color.White;

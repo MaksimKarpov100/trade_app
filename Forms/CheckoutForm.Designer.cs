@@ -5,9 +5,8 @@
         private System.ComponentModel.IContainer components = null;
         private System.Windows.Forms.PictureBox picLogo;
         private System.Windows.Forms.Label lblTitle, lblFio, lblPickup, lblSum, lblDiscount, lblCode;
-        private System.Windows.Forms.TextBox txtFio;
-        private System.Windows.Forms.ComboBox cmbPickupPoint;
-        private System.Windows.Forms.Button btnConfirm, btnCancel;
+        private System.Windows.Forms.ComboBox cmbFio, cmbPickupPoint;
+        private System.Windows.Forms.Button btnRefreshClients, btnConfirm, btnCancel;
 
         protected override void Dispose(bool disposing)
         {
@@ -20,7 +19,8 @@
             this.picLogo = new System.Windows.Forms.PictureBox();
             this.lblTitle = new System.Windows.Forms.Label();
             this.lblFio = new System.Windows.Forms.Label();
-            this.txtFio = new System.Windows.Forms.TextBox();
+            this.cmbFio = new System.Windows.Forms.ComboBox();
+            this.btnRefreshClients = new System.Windows.Forms.Button();
             this.lblPickup = new System.Windows.Forms.Label();
             this.cmbPickupPoint = new System.Windows.Forms.ComboBox();
             this.lblSum = new System.Windows.Forms.Label();
@@ -45,14 +45,25 @@
             this.lblFio.Text = "ФИО клиента:";
             this.lblFio.Location = new System.Drawing.Point(20, 90);
             this.lblFio.AutoSize = true;
-            this.txtFio.Location = new System.Drawing.Point(180, 87);
-            this.txtFio.Size = new System.Drawing.Size(350, 25);
+            this.cmbFio.Location = new System.Drawing.Point(180, 87);
+            this.cmbFio.Size = new System.Drawing.Size(300, 25);
+            this.cmbFio.Font = new System.Drawing.Font("Comic Sans MS", 10F);
+            this.cmbFio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
+
+            this.btnRefreshClients.Text = "⟳";
+            this.btnRefreshClients.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnRefreshClients.Location = new System.Drawing.Point(485, 85);
+            this.btnRefreshClients.Size = new System.Drawing.Size(45, 28);
+            this.btnRefreshClients.BackColor = System.Drawing.Color.FromArgb(204, 255, 204);
+            this.btnRefreshClients.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRefreshClients.Click += new System.EventHandler(this.btnRefreshClients_Click);
 
             this.lblPickup.Text = "Пункт выдачи:";
             this.lblPickup.Location = new System.Drawing.Point(20, 130);
             this.lblPickup.AutoSize = true;
             this.cmbPickupPoint.Location = new System.Drawing.Point(180, 127);
             this.cmbPickupPoint.Size = new System.Drawing.Size(350, 25);
+            this.cmbPickupPoint.Font = new System.Drawing.Font("Comic Sans MS", 10F);
             this.cmbPickupPoint.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 
             this.lblSum.Text = "Сумма: 0 руб.";
@@ -87,12 +98,19 @@
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
 
             this.ClientSize = new System.Drawing.Size(560, 340);
-            this.Controls.Add(this.picLogo); this.Controls.Add(this.lblTitle);
-            this.Controls.Add(this.lblFio); this.Controls.Add(this.txtFio);
-            this.Controls.Add(this.lblPickup); this.Controls.Add(this.cmbPickupPoint);
-            this.Controls.Add(this.lblSum); this.Controls.Add(this.lblDiscount);
+            this.Controls.Add(this.picLogo);
+            this.Controls.Add(this.lblTitle);
+            this.Controls.Add(this.lblFio);
+            this.Controls.Add(this.cmbFio);
+            this.Controls.Add(this.btnRefreshClients);
+            this.Controls.Add(this.lblPickup);
+            this.Controls.Add(this.cmbPickupPoint);
+            this.Controls.Add(this.lblSum);
+            this.Controls.Add(this.lblDiscount);
             this.Controls.Add(this.lblCode);
-            this.Controls.Add(this.btnConfirm); this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnConfirm);
+            this.Controls.Add(this.btnCancel);
+
             this.Text = "Оформление заказа";
             this.Font = new System.Drawing.Font("Comic Sans MS", 10F);
             this.BackColor = System.Drawing.Color.White;

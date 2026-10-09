@@ -18,11 +18,25 @@ namespace trade_app.Forms
             Icon = Properties.Resources.icon;
             this.article = article;
 
-            FillCombo(cmbCategory, "SELECT CategoryID, CategoryName FROM Category ORDER BY CategoryName", "CategoryName", "CategoryID");
-            FillCombo(cmbManufacturer, "SELECT ManufacturerID, ManufacturerName FROM Manufacturer ORDER BY ManufacturerName", "ManufacturerName", "ManufacturerID");
-            FillCombo(cmbSupplier, "SELECT SupplierID, SupplierName FROM Supplier ORDER BY SupplierName", "SupplierName", "SupplierID");
-            FillCombo(cmbUnit, "SELECT UnitID, UnitName FROM Unit ORDER BY UnitName", "UnitName", "UnitID");
-            FillCombo(cmbStatus, "SELECT ProductStatusID, ProductStatusName FROM ProductStatus ORDER BY ProductStatusName", "ProductStatusName", "ProductStatusID");
+            FillCombo(cmbCategory,
+                "SELECT CategoryID, CategoryName FROM Category ORDER BY CategoryName",
+                "CategoryName", "CategoryID");
+
+            FillCombo(cmbManufacturer,
+                "SELECT ManufacturerID, ManufacturerName FROM Manufacturer ORDER BY ManufacturerName",
+                "ManufacturerName", "ManufacturerID");
+
+            FillCombo(cmbSupplier,
+                "SELECT SupplierID, SupplierName FROM Supplier ORDER BY SupplierName",
+                "SupplierName", "SupplierID");
+
+            FillCombo(cmbUnit,
+                "SELECT UnitID, UnitName FROM Unit ORDER BY UnitName",
+                "UnitName", "UnitID");
+
+            FillCombo(cmbStatus,
+                "SELECT ProductStatusID, ProductStatusName FROM ProductStatus ORDER BY ProductStatusName",
+                "ProductStatusName", "ProductStatusID");
 
             if (article == null)
             {
@@ -54,7 +68,8 @@ namespace trade_app.Forms
         {
             MySqlConnection conn = new MySqlConnection(Program.ConnStr(true));
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM Product WHERE ProductArticleNumber=@a", conn);
+            MySqlCommand cmd = new MySqlCommand(
+                "SELECT * FROM Product WHERE ProductArticleNumber=@a", conn);
             cmd.Parameters.AddWithValue("@a", article);
             MySqlDataReader r = cmd.ExecuteReader();
 
@@ -63,6 +78,7 @@ namespace trade_app.Forms
                 txtArticle.Text = r["ProductArticleNumber"].ToString();
                 txtName.Text = r["ProductName"].ToString();
                 txtDescription.Text = r["ProductDescription"].ToString();
+
                 numCost.Value = Convert.ToDecimal(r["ProductCost"]);
                 numMaxDiscount.Value = Convert.ToDecimal(r["ProductMaxDiscount"]);
                 numDiscount.Value = Convert.ToDecimal(r["ProductCurrentDiscount"]);
@@ -75,10 +91,14 @@ namespace trade_app.Forms
                 cmbStatus.SelectedValue = Convert.ToInt32(r["ProductStatusID"]);
 
                 string photo = "";
-                if (r["ProductPhoto"] != DBNull.Value) photo = r["ProductPhoto"].ToString();
+                if (r["ProductPhoto"] != DBNull.Value)
+                    photo = r["ProductPhoto"].ToString();
                 selectedPhotoName = photo;
 
-                if (photo == "") picPhoto.Image = Properties.Resources.picture;
+                if (photo == "")
+                {
+                    picPhoto.Image = Properties.Resources.picture;
+                }
                 else
                 {
                     string fullPath = AppDomain.CurrentDomain.BaseDirectory + "Photos\\" + photo;
@@ -87,10 +107,14 @@ namespace trade_app.Forms
                         Image img = Image.FromFile(fullPath);
                         picPhoto.Image = new Bitmap(img, 150, 150);
                     }
-                    else picPhoto.Image = Properties.Resources.picture;
+                    else
+                    {
+                        picPhoto.Image = Properties.Resources.picture;
+                    }
                 }
             }
-            r.Close(); conn.Close();
+            r.Close();
+            conn.Close();
         }
 
         private void btnChoosePhoto_Click(object sender, EventArgs e)
@@ -112,7 +136,10 @@ namespace trade_app.Forms
                 Image img = Image.FromFile(destPath);
                 picPhoto.Image = new Bitmap(img, 150, 150);
             }
-            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+            }
         }
 
         private void btnDeletePhoto_Click(object sender, EventArgs e)
@@ -124,10 +151,16 @@ namespace trade_app.Forms
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (txtArticle.Text.Trim() == "" || txtName.Text.Trim() == "")
-            { MessageBox.Show("Артикул и наименование обязательны."); return; }
+            {
+                MessageBox.Show("Артикул и наименование обязательны.");
+                return;
+            }
 
             if (numDiscount.Value > numMaxDiscount.Value)
-            { MessageBox.Show("Скидка не может быть больше максимальной."); return; }
+            {
+                MessageBox.Show("Скидка не может быть больше максимальной.");
+                return;
+            }
 
             MySqlConnection conn = new MySqlConnection(Program.ConnStr(true));
             conn.Open();
@@ -138,20 +171,32 @@ namespace trade_app.Forms
                     "SELECT COUNT(*) FROM Product WHERE ProductArticleNumber=@a", conn);
                 check.Parameters.AddWithValue("@a", txtArticle.Text);
                 long n = Convert.ToInt64(check.ExecuteScalar());
-                if (n > 0) { MessageBox.Show("Такой артикул уже есть."); conn.Close(); return; }
+                if (n > 0)
+                {
+                    MessageBox.Show("Такой артикул уже есть.");
+                    conn.Close();
+                    return;
+                }
             }
 
             string sql;
             if (article == null)
-                sql = "INSERT INTO Product (ProductArticleNumber, ProductName, ProductDescription, CategoryID, " +
+            {
+                sql = "INSERT INTO Product " +
+                      "(ProductArticleNumber, ProductName, ProductDescription, CategoryID, " +
                       "ProductPhoto, ManufacturerID, SupplierID, UnitID, ProductCost, " +
                       "ProductMaxDiscount, ProductCurrentDiscount, ProductQuantityInStock, ProductStatusID) " +
                       "VALUES (@a, @n, @d, @c, @photo, @m, @s, @u, @cost, @maxd, @curd, @q, @st)";
+            }
             else
-                sql = "UPDATE Product SET ProductName=@n, ProductDescription=@d, CategoryID=@c, " +
+            {
+                sql = "UPDATE Product SET " +
+                      "ProductName=@n, ProductDescription=@d, CategoryID=@c, " +
                       "ProductPhoto=@photo, ManufacturerID=@m, SupplierID=@s, UnitID=@u, " +
                       "ProductCost=@cost, ProductMaxDiscount=@maxd, ProductCurrentDiscount=@curd, " +
-                      "ProductQuantityInStock=@q, ProductStatusID=@st WHERE ProductArticleNumber=@a";
+                      "ProductQuantityInStock=@q, ProductStatusID=@st " +
+                      "WHERE ProductArticleNumber=@a";
+            }
 
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@a", txtArticle.Text);

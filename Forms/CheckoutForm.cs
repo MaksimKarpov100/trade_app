@@ -19,11 +19,12 @@ namespace trade_app.Forms
             this.userFio = userFio;
 
             LoadPickupPoints();
+            LoadClients();
 
             if (userFio != null && userFio.Contains("Гостевой режим") == false)
             {
-                txtFio.Text = userFio;
-                txtFio.ReadOnly = true;
+                cmbFio.Text = userFio;
+                cmbFio.Enabled = false;
             }
 
             lblSum.Text = "Сумма: " + Cart.SumTotal().ToString("0.00") + " руб.";
@@ -48,10 +49,38 @@ namespace trade_app.Forms
             conn.Close();
         }
 
+        private void LoadClients()
+        {
+            MySqlConnection conn = new MySqlConnection(Program.ConnStr(true));
+            conn.Open();
+            MySqlDataAdapter da = new MySqlDataAdapter(
+                "SELECT DISTINCT OrderClientName FROM `Order` " +
+                "WHERE OrderClientName IS NOT NULL AND OrderClientName != '' " +
+                "ORDER BY OrderClientName", conn);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            cmbFio.DataSource = dt;
+            cmbFio.DisplayMember = "OrderClientName";
+            conn.Close();
+        }
+
+        private void btnRefreshClients_Click(object sender, EventArgs e)
+        {
+            LoadClients();
+        }
+
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            if (txtFio.Text.Trim() == "") { MessageBox.Show("Введите ФИО клиента."); return; }
-            if (cmbPickupPoint.SelectedItem == null) { MessageBox.Show("Выберите пункт выдачи."); return; }
+            if (cmbFio.Text.Trim() == "")
+            {
+                MessageBox.Show("Выберите или введите ФИО клиента.");
+                return;
+            }
+            if (cmbPickupPoint.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите пункт выдачи.");
+                return;
+            }
 
             try
             {
@@ -72,7 +101,7 @@ namespace trade_app.Forms
                 cmdOrder.Parameters.AddWithValue("@id", newOrderId);
                 cmdOrder.Parameters.AddWithValue("@delivery", deliveryDate);
                 cmdOrder.Parameters.AddWithValue("@pickup", cmbPickupPoint.SelectedValue);
-                cmdOrder.Parameters.AddWithValue("@fio", txtFio.Text.Trim());
+                cmdOrder.Parameters.AddWithValue("@fio", cmbFio.Text.Trim());
                 cmdOrder.Parameters.AddWithValue("@code", receiveCode);
                 cmdOrder.ExecuteNonQuery();
 
@@ -94,50 +123,47 @@ namespace trade_app.Forms
                 DialogResult = DialogResult.OK;
                 Close();
             }
-            catch (Exception ex) { MessageBox.Show("Ошибка: " + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+            }
         }
 
         private void SaveTalon(int days, DateTime deliveryDate)
         {
             SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Filter = "Текстовый файл (*.txt)|*.txt";
-            dlg.FileName = "Талон_заказа_" + newOrderId + ".txt";
+            dlg.Filter = "Word (*.rtf)|*.rtf";
+            dlg.FileName = "Талон_заказа_" + newOrderId + ".rtf";
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             StreamWriter w = new StreamWriter(dlg.FileName, false, System.Text.Encoding.UTF8);
-            w.WriteLine("════════════════════════════════════════");
-            w.WriteLine("        ТАЛОН НА ПОЛУЧЕНИЕ ЗАКАЗА");
-            w.WriteLine("════════════════════════════════════════");
-            w.WriteLine();
-            w.WriteLine("Дата заказа:    " + DateTime.Now.ToString("dd.MM.yyyy"));
-            w.WriteLine("Номер заказа:   " + newOrderId);
-            w.WriteLine();
-            w.WriteLine("       КОД ПОЛУЧЕНИЯ:  " + receiveCode);
-            w.WriteLine();
-            w.WriteLine("ФИО клиента:    " + txtFio.Text.Trim());
-            w.WriteLine("Пункт выдачи:   " + cmbPickupPoint.Text);
-            w.WriteLine("Срок доставки:  " + days + " дн.");
-            w.WriteLine("Дата доставки:  " + deliveryDate.ToString("dd.MM.yyyy"));
-            w.WriteLine();
-            w.WriteLine("────────────────────────────────────────");
-            w.WriteLine("                СОСТАВ ЗАКАЗА");
-            w.WriteLine("────────────────────────────────────────");
-            w.WriteLine();
+            w.WriteLine(@"{\rtf1\ansi\deff0");
+            w.WriteLine(@"{\fonttbl{\f0 Comic Sans MS;}}");
+            w.WriteLine(@"\f0\fs24");
+            w.WriteLine(@"\b\fs32 ТАЛОН НА ПОЛУЧЕНИЕ ЗАКАЗА\b0\fs24\par\par");
+            w.WriteLine(@"Дата заказа: " + DateTime.Now.ToString("dd.MM.yyyy") + @"\par");
+            w.WriteLine(@"Номер заказа: " + newOrderId + @"\par");
+            w.WriteLine(@"\b\fs40 Код получения: " + receiveCode + @"\b0\fs24\par\par");
+            w.WriteLine(@"ФИО клиента: " + cmbFio.Text.Trim() + @"\par");
+            w.WriteLine(@"Пункт выдачи: " + cmbPickupPoint.Text + @"\par");
+            w.WriteLine(@"Срок доставки: " + days + @" дн.\par");
+            w.WriteLine(@"Дата доставки: " + deliveryDate.ToString("dd.MM.yyyy") + @"\par\par");
+            w.WriteLine(@"\b Состав заказа:\b0\par");
+            w.WriteLine(@"-----------------------------------\par");
 
             for (int i = 0; i < Cart.Items.Count; i++)
             {
                 CartItem item = Cart.Items[i];
-                w.WriteLine(item.Name + "  —  " + item.Quantity + " шт × " +
-                            item.Price.ToString("0.00") + " = " +
-                            item.TotalWithDiscount().ToString("0.00"));
+                w.WriteLine(item.Name + @" — " + item.Quantity + @" шт × " +
+                            item.Price.ToString("0.00") + @" = " +
+                            item.TotalWithDiscount().ToString("0.00") + @"\par");
             }
 
-            w.WriteLine();
-            w.WriteLine("────────────────────────────────────────");
-            w.WriteLine("Сумма без скидки:  " + Cart.SumNoDiscount().ToString("0.00") + " руб.");
-            w.WriteLine("Скидка:            " + Cart.SumDiscount().ToString("0.00") + " руб.");
-            w.WriteLine("ИТОГО:             " + Cart.SumTotal().ToString("0.00") + " руб.");
-            w.WriteLine("════════════════════════════════════════");
+            w.WriteLine(@"-----------------------------------\par");
+            w.WriteLine(@"Сумма без скидки: " + Cart.SumNoDiscount().ToString("0.00") + @" руб.\par");
+            w.WriteLine(@"Скидка: " + Cart.SumDiscount().ToString("0.00") + @" руб.\par");
+            w.WriteLine(@"\b ИТОГО: " + Cart.SumTotal().ToString("0.00") + @" руб.\b0\par");
+            w.WriteLine(@"}");
             w.Close();
 
             System.Diagnostics.Process.Start(dlg.FileName);

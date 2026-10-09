@@ -20,6 +20,7 @@ namespace trade_app.Forms
         private void ShowCart()
         {
             dgvCart.Rows.Clear();
+
             for (int i = 0; i < Cart.Items.Count; i++)
             {
                 CartItem item = Cart.Items[i];
@@ -34,16 +35,25 @@ namespace trade_app.Forms
 
             if (dgvCart.Rows.Count > 0 && dgvCart.SelectedRows.Count > 0)
                 LoadPhotoForRow(dgvCart.SelectedRows[0].Index);
-            else picPhoto.Image = Properties.Resources.picture;
+            else
+                picPhoto.Image = Properties.Resources.picture;
 
-            if (Cart.Count() == 0) { MessageBox.Show("Корзина пуста."); Close(); }
+            if (Cart.Count() == 0)
+            {
+                MessageBox.Show("Корзина пуста.");
+                Close();
+            }
         }
 
         private void LoadPhotoForRow(int index)
         {
             if (index < 0 || index >= Cart.Items.Count) return;
+
             CartItem item = Cart.Items[index];
-            if (item.Photo == "") picPhoto.Image = Properties.Resources.picture;
+            if (item.Photo == "")
+            {
+                picPhoto.Image = Properties.Resources.picture;
+            }
             else
             {
                 string path = AppDomain.CurrentDomain.BaseDirectory + "Photos\\" + item.Photo;
@@ -52,8 +62,13 @@ namespace trade_app.Forms
                     Image img = Image.FromFile(path);
                     picPhoto.Image = new Bitmap(img, 130, 130);
                 }
-                else picPhoto.Image = Properties.Resources.picture;
+                else
+                {
+                    picPhoto.Image = Properties.Resources.picture;
+                }
             }
+
+            numQty.Value = item.Quantity;
         }
 
         private void dgvCart_SelectionChanged(object sender, EventArgs e)
@@ -62,40 +77,63 @@ namespace trade_app.Forms
                 LoadPhotoForRow(dgvCart.SelectedRows[0].Index);
         }
 
-        private void dgvCart_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void btnApplyQty_Click(object sender, EventArgs e)
         {
-            if (e.ColumnIndex != 2) return;
-            int index = e.RowIndex;
-            int qty = 0;
-            try { qty = Convert.ToInt32(dgvCart.Rows[index].Cells["colQty"].Value); }
-            catch { qty = Cart.Items[index].Quantity; }
+            if (dgvCart.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите товар.");
+                return;
+            }
+
+            int index = dgvCart.SelectedRows[0].Index;
+            int qty = (int)numQty.Value;
 
             if (qty <= 0)
             {
                 Cart.Remove(Cart.Items[index].Article);
                 if (Cart.Count() == 0) { Close(); return; }
-                ShowCart(); return;
+                ShowCart();
+                return;
             }
+
             Cart.Items[index].Quantity = qty;
             ShowCart();
         }
 
         private void btnRemove_Click(object sender, EventArgs e)
         {
-            if (dgvCart.SelectedRows.Count == 0) { MessageBox.Show("Выберите товар."); return; }
+            if (dgvCart.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите товар.");
+                return;
+            }
+
             string article = dgvCart.SelectedRows[0].Cells[0].Value.ToString();
             Cart.Remove(article);
+
             if (Cart.Count() == 0) { Close(); return; }
             ShowCart();
         }
 
         private void btnCheckout_Click(object sender, EventArgs e)
         {
-            if (Cart.Count() == 0) { MessageBox.Show("Корзина пуста."); return; }
+            if (Cart.Count() == 0)
+            {
+                MessageBox.Show("Корзина пуста.");
+                return;
+            }
+
             CheckoutForm f = new CheckoutForm(userFio);
-            if (f.ShowDialog() == DialogResult.OK) { Cart.Clear(); Close(); }
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                Cart.Clear();
+                Close();
+            }
         }
 
-        private void btnClose_Click(object sender, EventArgs e) { Close(); }
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }

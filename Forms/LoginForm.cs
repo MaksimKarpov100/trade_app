@@ -14,12 +14,6 @@ namespace trade_app.Forms
         {
             InitializeComponent();
             Icon = Properties.Resources.icon;
-
-            // Подсказки в полях
-            txtLogin.Text = "";
-            txtPassword.Text = "";
-
-            // Первый фокус — на логин
             txtLogin.Focus();
         }
 
@@ -40,7 +34,7 @@ namespace trade_app.Forms
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             captcha.Generate();
-            captcha.Show(lblCaptcha);
+            captcha.Draw(picCaptcha);
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -79,16 +73,14 @@ namespace trade_app.Forms
                 return;
             }
 
-            // Проверка CAPTCHA (со 2-й попытки)
             if (fails >= 1)
             {
                 if (txtCaptcha.Text.Trim().ToUpper() != captcha.Code.ToUpper())
                 {
                     MessageBox.Show("Неверная капча.", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
-
                     captcha.Generate();
-                    captcha.Show(lblCaptcha);
+                    captcha.Draw(picCaptcha);
                     txtCaptcha.Clear();
                     txtCaptcha.Focus();
 
@@ -141,18 +133,17 @@ namespace trade_app.Forms
                 {
                     reader.Close();
                     conn.Close();
-
                     fails = fails + 1;
                     MessageBox.Show("Неверный логин или пароль.", "Ошибка авторизации",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    lblCaptcha.Visible = true;
+                    lblCaptchaTitle.Visible = true;
+                    picCaptcha.Visible = true;
                     txtCaptcha.Visible = true;
                     btnRefresh.Visible = true;
-                    lblCaptchaTitle.Visible = true;
 
                     captcha.Generate();
-                    captcha.Show(lblCaptcha);
+                    captcha.Draw(picCaptcha);
                 }
             }
             catch (Exception ex)
@@ -164,14 +155,10 @@ namespace trade_app.Forms
 
         private void LoginForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult answer = MessageBox.Show(
-                "Вы точно хотите выйти?", "Подтверждение",
+            DialogResult answer = MessageBox.Show("Вы точно хотите выйти?", "Подтверждение",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (answer != DialogResult.Yes)
-                e.Cancel = true;
-            else
-                Application.Exit();
+            if (answer != DialogResult.Yes) e.Cancel = true;
+            else Application.Exit();
         }
     }
 }

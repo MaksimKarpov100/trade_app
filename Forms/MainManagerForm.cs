@@ -20,11 +20,7 @@ namespace trade_app.Forms
             f.ShowDialog();
         }
 
-        private void btnLogout_Click(object sender, EventArgs e)
-        {
-            logout = true;
-            Close();
-        }
+        private void btnLogout_Click(object sender, EventArgs e) { logout = true; Close(); }
 
         private void MainManagerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -32,14 +28,8 @@ namespace trade_app.Forms
             if (e.CloseReason != CloseReason.UserClosing) return;
             DialogResult answer = MessageBox.Show("Вы точно хотите выйти?", "Подтверждение",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (answer != DialogResult.Yes)
-            {
-                e.Cancel = true;
-            }
-            else
-            {
-                Application.Exit();
-            }
+            if (answer != DialogResult.Yes) e.Cancel = true;
+            else Application.Exit();
         }
     }
 }

@@ -100,11 +100,17 @@
     <Compile Include="Forms\MainManagerForm.Designer.cs">
       <DependentUpon>MainManagerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\OrderForm.cs">
+    <Compile Include="Forms\OrdersForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\OrderForm.Designer.cs">
-      <DependentUpon>OrderForm.cs</DependentUpon>
+    <Compile Include="Forms\OrdersForm.Designer.cs">
+      <DependentUpon>OrdersForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\OrderViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OrderViewForm.Designer.cs">
+      <DependentUpon>OrderViewForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ProductEditForm.cs">
       <SubType>Form</SubType>
@@ -141,8 +147,11 @@
     <EmbeddedResource Include="Forms\MainManagerForm.resx">
       <DependentUpon>MainManagerForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OrderForm.resx">
-      <DependentUpon>OrderForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\OrdersForm.resx">
+      <DependentUpon>OrdersForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OrderViewForm.resx">
+      <DependentUpon>OrderViewForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProductEditForm.resx">
       <DependentUpon>ProductEditForm.cs</DependentUpon>
@@ -182,6 +191,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Photos\A782R4.jpg" />
+    <Content Include="Photos\D374E4.jpeg" />
+    <Content Include="Photos\K830R4.jpg" />
+    <Content Include="Photos\K849L6.jpeg" />
+    <Content Include="Photos\O393R4.jpeg" />
+    <Content Include="Photos\S037R9.jpeg" />
+    <Content Include="Photos\S983R4.jpg" />
+    <Content Include="Photos\Z374R3.jpeg" />
+    <Content Include="Photos\Z469T7.jpg" />
+    <Content Include="Photos\Z472R4.jpeg" />
+    <None Include="Resources\cart.png" />
     <Content Include="Порядок импорта.txt" />
     <None Include="Resources\icon.ico" />
     <None Include="Resources\picture.png" />
@@ -189,8 +209,6 @@
     <None Include="Resources\logo.bmp" />
     <Content Include="Resources\trade.sql" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Photos\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

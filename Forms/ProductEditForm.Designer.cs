@@ -73,7 +73,7 @@
             // 
             this.picPhoto.BackColor = System.Drawing.Color.WhiteSmoke;
             this.picPhoto.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.picPhoto.Location = new System.Drawing.Point(507, 12);
+            this.picPhoto.Location = new System.Drawing.Point(486, 20);
             this.picPhoto.Name = "picPhoto";
             this.picPhoto.Size = new System.Drawing.Size(150, 150);
             this.picPhoto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -304,7 +304,7 @@
             this.btnChoosePhoto.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(255)))), ((int)(((byte)(204)))));
             this.btnChoosePhoto.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnChoosePhoto.Font = new System.Drawing.Font("Comic Sans MS", 9F);
-            this.btnChoosePhoto.Location = new System.Drawing.Point(507, 172);
+            this.btnChoosePhoto.Location = new System.Drawing.Point(486, 180);
             this.btnChoosePhoto.Name = "btnChoosePhoto";
             this.btnChoosePhoto.Size = new System.Drawing.Size(150, 30);
             this.btnChoosePhoto.TabIndex = 27;
@@ -317,7 +317,7 @@
             this.btnDeletePhoto.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
             this.btnDeletePhoto.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeletePhoto.Font = new System.Drawing.Font("Comic Sans MS", 9F);
-            this.btnDeletePhoto.Location = new System.Drawing.Point(507, 207);
+            this.btnDeletePhoto.Location = new System.Drawing.Point(486, 215);
             this.btnDeletePhoto.Name = "btnDeletePhoto";
             this.btnDeletePhoto.Size = new System.Drawing.Size(150, 30);
             this.btnDeletePhoto.TabIndex = 28;
@@ -354,7 +354,7 @@
             // ProductEditForm
             // 
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(669, 615);
+            this.ClientSize = new System.Drawing.Size(643, 615);
             this.Controls.Add(this.picLogo);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.picPhoto);
