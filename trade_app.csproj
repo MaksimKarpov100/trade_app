@@ -50,6 +50,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\BackupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BackupForm.Designer.cs">
+      <DependentUpon>BackupForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Service\BackupService.cs" />
     <Compile Include="Captcha.cs" />
     <Compile Include="Cart.cs" />
     <Compile Include="Forms\EditOrderForm.cs">
@@ -126,6 +133,10 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\CsvImporter.cs" />
+    <EmbeddedResource Include="Forms\BackupForm.resx">
+      <DependentUpon>BackupForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\CartForm.resx">
       <DependentUpon>CartForm.cs</DependentUpon>
     </EmbeddedResource>

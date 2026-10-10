@@ -57,6 +57,63 @@ namespace trade_app
             catch { return false; }
         }
 
+        public static void EnsureDefaultUsers()
+        {
+            try
+            {
+                MySqlConnection conn = new MySqlConnection(ConnStr(true));
+                conn.Open();
+
+                string sqlRoles =
+                    "INSERT IGNORE INTO Role (RoleID, RoleName) VALUES " +
+                    "(1, 'Клиент'), " +
+                    "(2, 'Менеджер'), " +
+                    "(3, 'Администратор')";
+                new MySqlCommand(sqlRoles, conn).ExecuteNonQuery();
+
+                EnsureUser(conn, "Админ", "Админ", "Админович",
+                                "admin", "admin", 3);
+                EnsureUser(conn, "Петров", "Пётр", "Петрович",
+                                "manager", "manager", 2);
+                EnsureUser(conn, "Иванов", "Иван", "Иванович",
+                                "user", "user", 1);
+
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Не удалось создать пользователей по умолчанию:\n" + ex.Message,
+                    "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private static void EnsureUser(MySqlConnection conn,
+            string surname, string name, string patronymic,
+            string login, string password, int roleId)
+        {
+            MySqlCommand check = new MySqlCommand(
+                "SELECT COUNT(*) FROM User WHERE UserLogin=@l", conn);
+            check.Parameters.AddWithValue("@l", login);
+            long n = Convert.ToInt64(check.ExecuteScalar());
+
+            if (n > 0) return; 
+
+            MySqlCommand ins = new MySqlCommand(
+                "INSERT INTO User " +
+                "(UserSurname, UserName, UserPatronymic, " +
+                " UserLogin, UserPassword, UserRole) " +
+                "VALUES (@sn, @nm, @pt, @lg, @pw, @rl)", conn);
+            ins.Parameters.AddWithValue("@sn", surname);
+            ins.Parameters.AddWithValue("@nm", name);
+            ins.Parameters.AddWithValue("@pt", patronymic);
+            ins.Parameters.AddWithValue("@lg", login);
+            ins.Parameters.AddWithValue("@pw", password);
+            ins.Parameters.AddWithValue("@rl", roleId);
+            ins.ExecuteNonQuery();
+        }
+
+
         [STAThread]
         static void Main()
         {
@@ -75,6 +132,8 @@ namespace trade_app
                 Application.Run(new SettingsForm());
                 return;
             }
+
+            EnsureDefaultUsers();
 
             MessageBox.Show("Подключение успешно.");
             Application.Run(new LoginForm());

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
+using trade_app.Services;
 
 namespace trade_app.Forms
 {
@@ -17,13 +16,15 @@ namespace trade_app.Forms
         private void ImportForm_Load(object sender, EventArgs e)
         {
             cmbTable.Items.Clear();
-            MySqlConnection conn = new MySqlConnection(Program.ConnStr(true));
+            MySql.Data.MySqlClient.MySqlConnection conn =
+                new MySql.Data.MySqlClient.MySqlConnection(Program.ConnStr(true));
             conn.Open();
-            MySqlCommand cmd = new MySqlCommand(
-                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES " +
-                "WHERE TABLE_SCHEMA='" + Properties.Settings.Default.Database + "' " +
-                "AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME", conn);
-            MySqlDataReader r = cmd.ExecuteReader();
+            MySql.Data.MySqlClient.MySqlCommand cmd =
+                new MySql.Data.MySqlClient.MySqlCommand(
+                    "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES " +
+                    "WHERE TABLE_SCHEMA='" + Properties.Settings.Default.Database + "' " +
+                    "AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME", conn);
+            MySql.Data.MySqlClient.MySqlDataReader r = cmd.ExecuteReader();
             while (r.Read()) cmbTable.Items.Add(r.GetString(0));
             r.Close();
             conn.Close();
@@ -35,41 +36,6 @@ namespace trade_app.Forms
             OpenFileDialog d = new OpenFileDialog();
             d.Filter = "CSV|*.csv";
             if (d.ShowDialog() == DialogResult.OK) txtPath.Text = d.FileName;
-        }
-
-        private string[] SplitCsv(string line)
-        {
-            List<string> result = new List<string>();
-            bool inQuotes = false;
-            string cur = "";
-
-            for (int i = 0; i < line.Length; i++)
-            {
-                char ch = line[i];
-                if (ch == '"')
-                {
-                    if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
-                    {
-                        cur = cur + '"';
-                        i++;
-                    }
-                    else
-                    {
-                        inQuotes = !inQuotes;
-                    }
-                }
-                else if (ch == ',' && inQuotes == false)
-                {
-                    result.Add(cur);
-                    cur = "";
-                }
-                else
-                {
-                    cur = cur + ch;
-                }
-            }
-            result.Add(cur);
-            return result.ToArray();
         }
 
         private void btnImport_Click(object sender, EventArgs e)
@@ -86,62 +52,91 @@ namespace trade_app.Forms
             }
 
             string table = cmbTable.SelectedItem.ToString();
-            string[] lines = File.ReadAllLines(txtPath.Text);
-            if (lines.Length < 2)
-            {
-                MessageBox.Show("Файл пуст.");
-                return;
-            }
+            string folder = Path.GetDirectoryName(txtPath.Text);
 
-            string[] columns = SplitCsv(lines[0]);
-            int count = 0;
+            DialogResult confirm = MessageBox.Show(
+                "Импортировать все CSV-файлы из папки:\n\n" + folder + "\n\n" +
+                "Таблицы будут ОЧИЩЕНЫ и заполнены данными из CSV.\n\nПродолжить?",
+                "Подтверждение импорта",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (confirm != DialogResult.Yes) return;
 
             try
             {
-                MySqlConnection conn = new MySqlConnection(Program.ConnStr(true));
-                conn.Open();
+                Cursor = Cursors.WaitCursor;
+                CsvImporter.ImportResult result = CsvImporter.ImportAll(folder);
+                Cursor = Cursors.Default;
 
-                for (int i = 1; i < lines.Length; i++)
+                string msg = "Импорт завершён.\n\n" +
+                             "Таблиц обработано: " + result.TablesDone + "\n" +
+                             "Строк добавлено: " + result.RowsTotal;
+
+                if (result.Errors.Count > 0)
                 {
-                    if (lines[i].Trim() == "") continue;
-                    string[] values = SplitCsv(lines[i]);
-
-                    if (values.Length != columns.Length)
-                    {
-                        MessageBox.Show("Строка " + (i + 1) + ": найдено " + values.Length +
-                            " полей, ожидалось " + columns.Length + ".\n\n" + lines[i]);
-                        conn.Close();
-                        return;
-                    }
-
-                    string cols = string.Join(",", columns);
-                    string vals = "";
-                    for (int c = 0; c < columns.Length; c++)
-                    {
-                        if (c > 0) vals = vals + ",";
-                        vals = vals + "@p" + c;
-                    }
-
-                    MySqlCommand cmd = new MySqlCommand(
-                        "INSERT INTO `" + table + "` (" + cols + ") VALUES (" + vals + ")", conn);
-
-                    for (int c = 0; c < columns.Length; c++)
-                    {
-                        if (values[c] == "")
-                            cmd.Parameters.AddWithValue("@p" + c, DBNull.Value);
-                        else
-                            cmd.Parameters.AddWithValue("@p" + c, values[c]);
-                    }
-                    cmd.ExecuteNonQuery();
-                    count++;
+                    msg += "\n\nОшибки (" + result.Errors.Count + "):\n" +
+                           string.Join("\n", result.Errors.GetRange(0,
+                               Math.Min(5, result.Errors.Count)));
                 }
-                conn.Close();
-                MessageBox.Show("Импортировано: " + count + " записей.");
+
+                MessageBox.Show(msg, "Готово",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка импорта:\n" + ex.Message);
+                Cursor = Cursors.Default;
+                MessageBox.Show("Ошибка массового импорта:\n" + ex.Message,
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnImportAll_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dlg = new FolderBrowserDialog();
+            dlg.Description = "Выберите папку со всеми CSV-файлами";
+            dlg.ShowNewFolderButton = false;
+
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            DialogResult confirm = MessageBox.Show(
+                "Импортировать ВСЕ CSV из папки:\n\n" + dlg.SelectedPath + "\n\n" +
+                "ВНИМАНИЕ: все таблицы будут очищены и залиты заново.\n\nПродолжить?",
+                "Подтверждение массового импорта",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (confirm != DialogResult.Yes) return;
+
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                CsvImporter.ImportResult result = CsvImporter.ImportAll(dlg.SelectedPath);
+                Cursor = Cursors.Default;
+
+                string msg = "Импорт завершён.\n\n" +
+                             "Таблиц обработано: " + result.TablesDone + "\n" +
+                             "Строк добавлено: " + result.RowsTotal;
+
+                if (result.Errors.Count > 0)
+                {
+                    msg += "\n\nОшибки (" + result.Errors.Count + "):\n" +
+                           string.Join("\n", result.Errors.GetRange(0,
+                               Math.Min(5, result.Errors.Count)));
+                }
+
+                MessageBox.Show(msg, "Готово",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                MessageBox.Show("Ошибка массового импорта:\n" + ex.Message,
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

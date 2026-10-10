@@ -213,7 +213,7 @@
             // 
             this.btnPrev.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(255)))), ((int)(((byte)(204)))));
             this.btnPrev.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPrev.Location = new System.Drawing.Point(237, 564);
+            this.btnPrev.Location = new System.Drawing.Point(240, 564);
             this.btnPrev.Name = "btnPrev";
             this.btnPrev.Size = new System.Drawing.Size(45, 30);
             this.btnPrev.TabIndex = 9;

@@ -223,6 +223,8 @@ namespace trade_app.Forms
                 ContextMenuStrip m = new ContextMenuStrip();
                 m.Items.Add("Добавить", null, Add_Click);
                 m.Items.Add("Редактировать", null, Edit_Click);
+                m.Items.Add(new ToolStripSeparator());
+                m.Items.Add("Резервное копирование...", null, btnBackup_Click);
                 m.Show(dgvProducts, e.Location);
             }
         }
@@ -256,7 +258,17 @@ namespace trade_app.Forms
         private void cmbFilter_SelectedIndexChanged(object sender, EventArgs e) { page = 1; ShowPage(); }
         private void btnPrev_Click(object sender, EventArgs e) { if (page > 1) { page--; ShowPage(); } }
         private void btnNext_Click(object sender, EventArgs e) { page++; ShowPage(); }
-        private void btnImport_Click(object sender, EventArgs e) { new ImportForm().ShowDialog(); }
+
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            new ImportForm().ShowDialog();
+        }
+
+        private void btnBackup_Click(object sender, EventArgs e)
+        {
+            BackupForm f = new BackupForm();
+            f.ShowDialog();
+        }
 
         private void btnOrders_Click(object sender, EventArgs e)
         {
@@ -264,14 +276,20 @@ namespace trade_app.Forms
             f.ShowDialog();
         }
 
-        private void btnLogout_Click(object sender, EventArgs e) { logout = true; Close(); }
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            logout = true;
+            Close();
+        }
 
         private void MainAdminForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (logout) return;
             if (e.CloseReason != CloseReason.UserClosing) return;
+
             DialogResult answer = MessageBox.Show("Вы точно хотите выйти?", "Подтверждение",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
             if (answer != DialogResult.Yes) e.Cancel = true;
             else Application.Exit();
         }

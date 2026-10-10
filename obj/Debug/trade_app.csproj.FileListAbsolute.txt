@@ -19,3 +19,5 @@ C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.csp
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.csproj.CopyComplete
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.exe
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.pdb
+C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.csproj.AssemblyReference.cache
+C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.Forms.BackupForm.resources

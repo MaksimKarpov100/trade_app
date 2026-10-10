@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using trade_app.Services;  
 
 namespace trade_app.Forms
 {
@@ -117,6 +118,17 @@ namespace trade_app.Forms
                     string role = reader["RoleName"].ToString();
                     reader.Close();
                     conn.Close();
+
+                    try
+                    {
+                        BackupService.CreateAutoBackup();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Не удалось создать резервную копию:\n" + ex.Message,
+                            "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+
                     Hide();
 
                     if (role == "Администратор") new MainAdminForm(fio).ShowDialog();
