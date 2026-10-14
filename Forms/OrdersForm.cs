@@ -3,6 +3,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using trade_app.Services;
 
 namespace trade_app.Forms
 {
@@ -24,12 +25,8 @@ namespace trade_app.Forms
         {
             try
             {
-                // Создаём колонки, если их нет
-                CreateColumnsIfMissing();
-
                 LoadOrders();
 
-                // Диапазон дат
                 if (all != null && all.Rows.Count > 0)
                 {
                     DateTime minDate = DateTime.MaxValue;
@@ -44,10 +41,8 @@ namespace trade_app.Forms
 
                     dtpFrom.ValueChanged -= dtpFrom_ValueChanged;
                     dtpTo.ValueChanged -= dtpTo_ValueChanged;
-
                     dtpFrom.Value = minDate;
                     dtpTo.Value = maxDate;
-
                     dtpFrom.ValueChanged += dtpFrom_ValueChanged;
                     dtpTo.ValueChanged += dtpTo_ValueChanged;
                 }
@@ -56,39 +51,10 @@ namespace trade_app.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    "Ошибка открытия формы заказов:\n\n" + ex.Message,
+                MessageBox.Show("Ошибка открытия формы заказов:\n\n" + ex.Message,
                     "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Close();
             }
-        }
-
-        // Программно создаём колонки
-        private void CreateColumnsIfMissing()
-        {
-            AddCol("colOrderID", "№ заказа", "OrderID", 60F, false);
-            AddCol("colClient", "ФИО клиента", "ClientName", 170F, false);
-            AddCol("colDate", "Дата заказа", "OrderDate", 90F, false);
-            AddCol("colDelivery", "Дата доставки", "DeliveryDate", 90F, false);
-            AddCol("colStatus", "Статус", "StatusName", 80F, false);
-            AddCol("colSostav", "Состав заказа", "Sostav", 260F, false);
-            AddCol("colSum", "Сумма заказа", "SumNoDisc", 100F, false);
-            AddCol("colDisc", "Скидка", "DiscountSum", 80F, false);
-            AddCol("colStatusID", "", "StatusID", 0F, true);
-            AddCol("colMinStock", "", "MinStock", 0F, true);
-        }
-
-        private void AddCol(string name, string header, string prop, float weight, bool hidden)
-        {
-            if (dgvOrders.Columns.Contains(name)) return;
-
-            DataGridViewTextBoxColumn c = new DataGridViewTextBoxColumn();
-            c.Name = name;
-            c.HeaderText = header;
-            c.DataPropertyName = prop;
-            c.FillWeight = weight == 0F ? 50F : weight;
-            if (hidden) c.Visible = false;
-            dgvOrders.Columns.Add(c);
         }
 
         private void LoadOrders()
@@ -98,12 +64,15 @@ namespace trade_app.Forms
 
             string sql =
                 "SELECT o.OrderID AS OrderID, " +
-                "       IFNULL(o.OrderClientName, '') AS ClientName, " +
-                "       o.OrderDate AS OrderDate, " +
+                "       IFNULL(o.OrderClientName, '')       AS ClientName, " +
+                "       IFNULL(o.OrderClientBirthDate, '')  AS BirthDate, " +
+                "       IFNULL(o.OrderClientPhone, '')      AS Phone, " +
+                "       IFNULL(o.OrderClientAddress, '')    AS Address, " +
+                "       o.OrderDate         AS OrderDate, " +
                 "       o.OrderDeliveryDate AS DeliveryDate, " +
-                "       os.StatusName AS StatusName, " +
-                "       o.OrderStatusID AS StatusID, " +
-                "       o.OrderCode AS OrderCode, " +
+                "       os.StatusName       AS StatusName, " +
+                "       o.OrderStatusID     AS StatusID, " +
+                "       o.OrderCode         AS OrderCode, " +
                 "       (SELECT GROUP_CONCAT(CONCAT(pr.ProductName, ' x', op.Quantity) SEPARATOR ', ') " +
                 "        FROM OrderProduct op " +
                 "        JOIN Product pr ON pr.ProductArticleNumber = op.ProductArticleNumber " +
@@ -128,6 +97,31 @@ namespace trade_app.Forms
             all = new DataTable();
             a.Fill(all);
             conn.Close();
+
+            if (!all.Columns.Contains("RawFio")) all.Columns.Add("RawFio", typeof(string));
+            if (!all.Columns.Contains("RawBirth")) all.Columns.Add("RawBirth", typeof(string));
+            if (!all.Columns.Contains("RawPhone")) all.Columns.Add("RawPhone", typeof(string));
+            if (!all.Columns.Contains("RawAddress")) all.Columns.Add("RawAddress", typeof(string));
+
+            for (int i = 0; i < all.Rows.Count; i++)
+            {
+                DataRow r = all.Rows[i];
+
+                string rawFio = r["ClientName"].ToString();
+                string rawBirth = r["BirthDate"].ToString();
+                string rawPhone = r["Phone"].ToString();
+                string rawAddress = r["Address"].ToString();
+
+                r["RawFio"] = rawFio;
+                r["RawBirth"] = rawBirth;
+                r["RawPhone"] = rawPhone;
+                r["RawAddress"] = rawAddress;
+
+                if (rawFio != "") r["ClientName"] = SecurityHelper.MaskFio(rawFio);
+                if (rawBirth != "") r["BirthDate"] = SecurityHelper.MaskBirthDate(rawBirth);
+                if (rawPhone != "") r["Phone"] = SecurityHelper.MaskPhone(rawPhone);
+                if (rawAddress != "") r["Address"] = SecurityHelper.MaskAddress(rawAddress);
+            }
         }
 
         private void ShowPage()
@@ -135,7 +129,6 @@ namespace trade_app.Forms
             if (all == null) return;
 
             DataTable filtered = all.Clone();
-
             string search = txtSearch.Text.Trim().ToLower();
             DateTime from = dtpFrom.Value.Date;
             DateTime to = dtpTo.Value.Date.AddDays(1);
@@ -184,9 +177,34 @@ namespace trade_app.Forms
             DataTable shown = sorted.Clone();
             for (int i = start; i < end; i++) shown.ImportRow(sorted.Rows[i]);
 
+            dgvOrders.DataSource = null;
+            dgvOrders.Columns.Clear();
+            dgvOrders.AutoGenerateColumns = true;
             dgvOrders.DataSource = shown;
 
-            // Цвета + сумма оплаченных — через DataRowView
+            foreach (DataGridViewColumn col in dgvOrders.Columns)
+            {
+                string prop = col.DataPropertyName;
+
+                if (prop == "ClientName") col.HeaderText = "ФИО клиента";
+                else if (prop == "BirthDate") col.HeaderText = "Дата рожд.";
+                else if (prop == "Phone") col.HeaderText = "Телефон";
+                else if (prop == "Address") col.HeaderText = "Адрес";
+                else if (prop == "OrderDate") col.HeaderText = "Дата заказа";
+                else if (prop == "DeliveryDate") col.HeaderText = "Доставка";
+                else if (prop == "StatusName") col.HeaderText = "Статус";
+                else if (prop == "Sostav") col.HeaderText = "Состав заказа";
+                else if (prop == "SumNoDisc") col.HeaderText = "Сумма";
+                else if (prop == "DiscountSum") col.HeaderText = "Скидка";
+
+                if (prop == "OrderID" || prop == "StatusID" || prop == "MinStock" ||
+                    prop == "RawFio" || prop == "RawBirth" || prop == "RawPhone" ||
+                    prop == "RawAddress" || prop == "OrderCode")
+                {
+                    col.Visible = false;
+                }
+            }
+
             decimal sumPaid = 0;
             for (int i = 0; i < dgvOrders.Rows.Count; i++)
             {
@@ -211,8 +229,7 @@ namespace trade_app.Forms
                 }
 
                 int st = Convert.ToInt32(r["StatusID"]);
-                if (st == 2)
-                    sumPaid += Convert.ToDecimal(r["SumNoDisc"]);
+                if (st == 2) sumPaid += Convert.ToDecimal(r["SumNoDisc"]);
             }
 
             lblRecords.Text = "Кол-во записей: " + total;
@@ -220,35 +237,41 @@ namespace trade_app.Forms
             lblSumPaid.Text = "Сумма оплаченных заказов: " + sumPaid.ToString("0") + " руб.";
         }
 
-        // ============ СОБЫТИЯ ============
-        private void txtSearch_TextChanged(object sender, EventArgs e)
+        private void dgvOrders_SelectionChanged(object sender, EventArgs e)
         {
-            page = 1;
-            ShowPage();
+            if (dgvOrders.SelectedRows.Count == 0) return;
+
+            DataRowView drv = (DataRowView)dgvOrders.SelectedRows[0].DataBoundItem;
+            if (drv == null) return;
+            DataRow r = drv.Row;
+
+            txtFioFull.Text = r["RawFio"].ToString();
+            txtBirthFull.Text = r["RawBirth"].ToString();
+            txtPhoneFull.Text = r["RawPhone"].ToString();
+            txtAddressFull.Text = r["RawAddress"].ToString();
         }
 
-        private void dtpFrom_ValueChanged(object sender, EventArgs e)
+        private void dgvOrders_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            page = 1;
-            ShowPage();
-        }
+            if (e.RowIndex < 0) return;
 
-        private void dtpTo_ValueChanged(object sender, EventArgs e)
-        {
-            page = 1;
-            ShowPage();
-        }
+            DataGridViewRow row = dgvOrders.Rows[e.RowIndex];
+            DataRowView drv = (DataRowView)row.DataBoundItem;
+            if (drv == null) return;
 
-        private void chkStatus_CheckedChanged(object sender, EventArgs e)
-        {
-            page = 1;
-            ShowPage();
-        }
+            int orderId = Convert.ToInt32(drv.Row["OrderID"]);
 
-        private void cmbSort_SelectedIndexChanged(object sender, EventArgs e)
-        {
+            OrderViewForm f = new OrderViewForm(orderId);
+            f.ShowDialog();
+
+            LoadOrders();
             ShowPage();
         }
+        private void txtSearch_TextChanged(object sender, EventArgs e) { page = 1; ShowPage(); }
+        private void dtpFrom_ValueChanged(object sender, EventArgs e) { page = 1; ShowPage(); }
+        private void dtpTo_ValueChanged(object sender, EventArgs e) { page = 1; ShowPage(); }
+        private void chkStatus_CheckedChanged(object sender, EventArgs e) { page = 1; ShowPage(); }
+        private void cmbSort_SelectedIndexChanged(object sender, EventArgs e) { ShowPage(); }
 
         private void btnReset_Click(object sender, EventArgs e)
         {
@@ -256,7 +279,7 @@ namespace trade_app.Forms
             chkAccepted.Checked = false;
             chkCompleted.Checked = false;
             chkCanceled.Checked = false;
-            cmbSort.SelectedIndex = 0;
+            if (cmbSort.Items.Count > 0) cmbSort.SelectedIndex = 0;
 
             if (all != null && all.Rows.Count > 0)
             {
@@ -272,10 +295,8 @@ namespace trade_app.Forms
 
                 dtpFrom.ValueChanged -= dtpFrom_ValueChanged;
                 dtpTo.ValueChanged -= dtpTo_ValueChanged;
-
                 dtpFrom.Value = minDate;
                 dtpTo.Value = maxDate;
-
                 dtpFrom.ValueChanged += dtpFrom_ValueChanged;
                 dtpTo.ValueChanged += dtpTo_ValueChanged;
             }
@@ -286,11 +307,7 @@ namespace trade_app.Forms
 
         private void btnPrev_Click(object sender, EventArgs e)
         {
-            if (page > 1)
-            {
-                page--;
-                ShowPage();
-            }
+            if (page > 1) { page--; ShowPage(); }
         }
 
         private void btnNext_Click(object sender, EventArgs e)
@@ -308,7 +325,11 @@ namespace trade_app.Forms
                 return;
             }
 
-            int orderId = Convert.ToInt32(dgvOrders.SelectedRows[0].Cells["colOrderID"].Value);
+            DataRowView drv = (DataRowView)dgvOrders.SelectedRows[0].DataBoundItem;
+            if (drv == null) return;
+
+            int orderId = Convert.ToInt32(drv.Row["OrderID"]);
+
             OrderViewForm f = new OrderViewForm(orderId);
             f.ShowDialog();
 
@@ -322,17 +343,8 @@ namespace trade_app.Forms
                 "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void btnMenu_Click(object sender, EventArgs e)
-        {
-            logout = true;
-            Close();
-        }
-
-        private void btnLogout_Click(object sender, EventArgs e)
-        {
-            logout = true;
-            Close();
-        }
+        private void btnMenu_Click(object sender, EventArgs e) { logout = true; Close(); }
+        private void btnLogout_Click(object sender, EventArgs e) { logout = true; Close(); }
 
         private void OrdersForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -342,10 +354,8 @@ namespace trade_app.Forms
             DialogResult answer = MessageBox.Show("Вы точно хотите выйти?", "Подтверждение",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (answer != DialogResult.Yes)
-                e.Cancel = true;
-            else
-                Application.Exit();
+            if (answer != DialogResult.Yes) e.Cancel = true;
+            else Application.Exit();
         }
     }
 }

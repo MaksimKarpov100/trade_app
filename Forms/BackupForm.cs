@@ -8,7 +8,6 @@ namespace trade_app.Forms
 {
     public partial class BackupForm : Form
     {
-        // Папка, где хранятся все резервные копии
         private readonly string BackupRoot;
 
         public BackupForm()
@@ -20,13 +19,11 @@ namespace trade_app.Forms
             if (!Directory.Exists(BackupRoot)) Directory.CreateDirectory(BackupRoot);
         }
 
-        // ================== ЗАГРУЗКА ФОРМЫ ==================
         private void BackupForm_Load(object sender, EventArgs e)
         {
             RefreshList();
         }
 
-        // ================== ОБНОВЛЕНИЕ СПИСКА ==================
         private void RefreshList()
         {
             lvBackups.Items.Clear();
@@ -42,7 +39,7 @@ namespace trade_app.Forms
 
             string[] dirs = Directory.GetDirectories(BackupRoot);
             Array.Sort(dirs);
-            Array.Reverse(dirs); // новые сверху
+            Array.Reverse(dirs); 
 
             for (int i = 0; i < dirs.Length; i++)
             {
@@ -55,7 +52,7 @@ namespace trade_app.Forms
                 ListViewItem item = new ListViewItem(name);
                 item.SubItems.Add(created.ToString("dd.MM.yyyy HH:mm:ss"));
                 item.SubItems.Add(HumanSize(bytes));
-                item.SubItems.Add(dir); // полный путь в 4-й колонке (скрытой)
+                item.SubItems.Add(dir);
                 item.Tag = dir;
 
                 lvBackups.Items.Add(item);
@@ -66,7 +63,6 @@ namespace trade_app.Forms
 
         private DateTime GetBackupDate(string dir, string name)
         {
-            // 1) из _backup_info.txt
             try
             {
                 string info = Path.Combine(dir, "_backup_info.txt");
@@ -86,7 +82,6 @@ namespace trade_app.Forms
             }
             catch { }
 
-            // 2) из имени yyyy-MM-dd_HH-mm-ss
             try
             {
                 if (name.Length >= 19)
@@ -101,7 +96,6 @@ namespace trade_app.Forms
             }
             catch { }
 
-            // 3) время создания папки
             try { return Directory.GetCreationTime(dir); }
             catch { return DateTime.MinValue; }
         }
@@ -126,7 +120,6 @@ namespace trade_app.Forms
             return (bytes / (1024.0 * 1024.0)).ToString("0.0") + " МБ";
         }
 
-        // ================== ВЫБРАННАЯ КОПИЯ ==================
         private string GetSelectedFolder()
         {
             if (lvBackups.SelectedItems.Count == 0) return null;
@@ -134,7 +127,6 @@ namespace trade_app.Forms
             return tag == null ? null : tag.ToString();
         }
 
-        // ================== СОЗДАТЬ ==================
         private void btnCreate_Click(object sender, EventArgs e)
         {
             string folder = Path.Combine(
@@ -168,7 +160,6 @@ namespace trade_app.Forms
             }
         }
 
-        // ================== ВОССТАНОВИТЬ ==================
         private void btnRestore_Click(object sender, EventArgs e)
         {
             string folder = GetSelectedFolder();
@@ -204,7 +195,6 @@ namespace trade_app.Forms
             }
         }
 
-        // ================== ОТКРЫТЬ ПАПКУ ==================
         private void btnOpen_Click(object sender, EventArgs e)
         {
             string folder = GetSelectedFolder();
@@ -226,7 +216,6 @@ namespace trade_app.Forms
             }
         }
 
-        // ================== УДАЛИТЬ ==================
         private void btnDelete_Click(object sender, EventArgs e)
         {
             string folder = GetSelectedFolder();
@@ -256,19 +245,16 @@ namespace trade_app.Forms
             }
         }
 
-        // ================== ОБНОВИТЬ ==================
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             RefreshList();
         }
 
-        // ================== ВЫХОД ==================
         private void btnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        // Двойной клик по строке — открыть папку этой копии
         private void lvBackups_DoubleClick(object sender, EventArgs e)
         {
             btnOpen_Click(sender, e);

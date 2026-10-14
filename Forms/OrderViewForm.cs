@@ -25,6 +25,9 @@ namespace trade_app.Forms
             string sqlOrder =
                 "SELECT o.OrderID, o.OrderDate, o.OrderDeliveryDate, " +
                 "       o.OrderClientName, o.OrderCode, os.StatusName, " +
+                "       IFNULL(o.OrderClientBirthDate, '') AS BirthDate, " +
+                "       IFNULL(o.OrderClientPhone, '')     AS Phone, " +
+                "       IFNULL(o.OrderClientAddress, '')   AS Address, " +
                 "       IFNULL(p.Address, '') AS PickupAddress " +
                 "FROM `Order` o " +
                 "JOIN OrderStatus os ON os.StatusID = o.OrderStatusID " +
@@ -38,6 +41,9 @@ namespace trade_app.Forms
             if (r.Read())
             {
                 txtFio.Text = r["OrderClientName"].ToString();
+                txtBirth.Text = r["BirthDate"].ToString();
+                txtPhone.Text = r["Phone"].ToString();
+                txtAddress.Text = r["Address"].ToString();
                 txtPickup.Text = r["PickupAddress"].ToString();
 
                 lblOrderNum.Text = "Номер заказа: " + r["OrderID"].ToString();
@@ -64,9 +70,7 @@ namespace trade_app.Forms
 
             dgvCart.Rows.Clear();
 
-            decimal sumNoDisc = 0;
-            decimal sumDisc = 0;
-            decimal discPercent = 0;
+            decimal sumNoDisc = 0, sumDisc = 0, discPercent = 0;
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
@@ -86,9 +90,7 @@ namespace trade_app.Forms
                 dgvCart.Rows.Add(article, name, qty, cost.ToString("0.00"));
             }
 
-            if (sumNoDisc > 0)
-                discPercent = sumDisc * 100 / sumNoDisc;
-
+            if (sumNoDisc > 0) discPercent = sumDisc * 100 / sumNoDisc;
             decimal sumTotal = sumNoDisc - sumDisc;
 
             lblSumNoDisc.Text = "Сумма покупки: " + sumNoDisc.ToString("0") + " руб.";

@@ -1,0 +1,4 @@
+﻿UserID,UserSurname,UserName,UserPatronymic,UserLogin,UserPassword,UserRole
+1,Админ,Админ,Админович,admin,admin,3
+2,Петров,Пётр,Петрович,manager,manager,2
+3,Иванов,Иван,Иванович,user,user,1

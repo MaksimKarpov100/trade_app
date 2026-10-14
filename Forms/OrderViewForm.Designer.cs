@@ -12,6 +12,12 @@
         private System.Windows.Forms.TextBox txtFio;
         private System.Windows.Forms.Label lblPickupLabel;
         private System.Windows.Forms.TextBox txtPickup;
+        private System.Windows.Forms.Label lblBirthLabel;
+        private System.Windows.Forms.TextBox txtBirth;
+        private System.Windows.Forms.Label lblPhoneLabel;
+        private System.Windows.Forms.TextBox txtPhone;
+        private System.Windows.Forms.Label lblAddressLabel;
+        private System.Windows.Forms.TextBox txtAddress;
 
         private System.Windows.Forms.Label lblOrderNum;
         private System.Windows.Forms.Label lblOrderDate;
@@ -52,6 +58,12 @@
             this.txtFio = new System.Windows.Forms.TextBox();
             this.lblPickupLabel = new System.Windows.Forms.Label();
             this.txtPickup = new System.Windows.Forms.TextBox();
+            this.lblBirthLabel = new System.Windows.Forms.Label();
+            this.txtBirth = new System.Windows.Forms.TextBox();
+            this.lblPhoneLabel = new System.Windows.Forms.Label();
+            this.txtPhone = new System.Windows.Forms.TextBox();
+            this.lblAddressLabel = new System.Windows.Forms.Label();
+            this.txtAddress = new System.Windows.Forms.TextBox();
 
             this.lblOrderNum = new System.Windows.Forms.Label();
             this.lblOrderDate = new System.Windows.Forms.Label();
@@ -94,15 +106,21 @@
             this.lblTitle.Location = new System.Drawing.Point(70, 20);
             this.lblTitle.AutoSize = true;
 
-            // ===== Группа КЛИЕНТ =====
+            // grpClient
             this.grpClient.Text = "Клиент";
             this.grpClient.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
             this.grpClient.Location = new System.Drawing.Point(20, 75);
-            this.grpClient.Size = new System.Drawing.Size(950, 110);
+            this.grpClient.Size = new System.Drawing.Size(950, 225);
             this.grpClient.Controls.Add(this.lblFioLabel);
             this.grpClient.Controls.Add(this.txtFio);
             this.grpClient.Controls.Add(this.lblPickupLabel);
             this.grpClient.Controls.Add(this.txtPickup);
+            this.grpClient.Controls.Add(this.lblBirthLabel);
+            this.grpClient.Controls.Add(this.txtBirth);
+            this.grpClient.Controls.Add(this.lblPhoneLabel);
+            this.grpClient.Controls.Add(this.txtPhone);
+            this.grpClient.Controls.Add(this.lblAddressLabel);
+            this.grpClient.Controls.Add(this.txtAddress);
 
             // ФИО
             this.lblFioLabel.Text = "ФИО клиента:";
@@ -111,7 +129,7 @@
             this.lblFioLabel.AutoSize = true;
 
             this.txtFio.Location = new System.Drawing.Point(15, 55);
-            this.txtFio.Size = new System.Drawing.Size(450, 25);
+            this.txtFio.Size = new System.Drawing.Size(450, 26);
             this.txtFio.Font = new System.Drawing.Font("Comic Sans MS", 10F);
             this.txtFio.ReadOnly = true;
             this.txtFio.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -123,31 +141,67 @@
             this.lblPickupLabel.AutoSize = true;
 
             this.txtPickup.Location = new System.Drawing.Point(490, 55);
-            this.txtPickup.Size = new System.Drawing.Size(440, 25);
+            this.txtPickup.Size = new System.Drawing.Size(440, 26);
             this.txtPickup.Font = new System.Drawing.Font("Comic Sans MS", 10F);
             this.txtPickup.ReadOnly = true;
             this.txtPickup.BackColor = System.Drawing.Color.WhiteSmoke;
 
-            // ===== МЕТКИ ЗАКАЗА =====
+            // Дата рождения
+            this.lblBirthLabel.Text = "Дата рождения:";
+            this.lblBirthLabel.Font = new System.Drawing.Font("Comic Sans MS", 10F);
+            this.lblBirthLabel.Location = new System.Drawing.Point(15, 95);
+            this.lblBirthLabel.AutoSize = true;
+
+            this.txtBirth.Location = new System.Drawing.Point(15, 120);
+            this.txtBirth.Size = new System.Drawing.Size(215, 26);
+            this.txtBirth.Font = new System.Drawing.Font("Comic Sans MS", 10F);
+            this.txtBirth.ReadOnly = true;
+            this.txtBirth.BackColor = System.Drawing.Color.WhiteSmoke;
+
+            // Телефон
+            this.lblPhoneLabel.Text = "Контактный телефон:";
+            this.lblPhoneLabel.Font = new System.Drawing.Font("Comic Sans MS", 10F);
+            this.lblPhoneLabel.Location = new System.Drawing.Point(250, 95);
+            this.lblPhoneLabel.AutoSize = true;
+
+            this.txtPhone.Location = new System.Drawing.Point(250, 120);
+            this.txtPhone.Size = new System.Drawing.Size(215, 26);
+            this.txtPhone.Font = new System.Drawing.Font("Comic Sans MS", 10F);
+            this.txtPhone.ReadOnly = true;
+            this.txtPhone.BackColor = System.Drawing.Color.WhiteSmoke;
+
+            // Адрес
+            this.lblAddressLabel.Text = "Адрес проживания:";
+            this.lblAddressLabel.Font = new System.Drawing.Font("Comic Sans MS", 10F);
+            this.lblAddressLabel.Location = new System.Drawing.Point(15, 160);
+            this.lblAddressLabel.AutoSize = true;
+
+            this.txtAddress.Location = new System.Drawing.Point(15, 185);
+            this.txtAddress.Size = new System.Drawing.Size(915, 26);
+            this.txtAddress.Font = new System.Drawing.Font("Comic Sans MS", 10F);
+            this.txtAddress.ReadOnly = true;
+            this.txtAddress.BackColor = System.Drawing.Color.WhiteSmoke;
+
+            // Метки заказа
             this.lblOrderNum.Text = "Номер заказа: —";
             this.lblOrderNum.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
-            this.lblOrderNum.Location = new System.Drawing.Point(20, 200);
+            this.lblOrderNum.Location = new System.Drawing.Point(20, 315);
             this.lblOrderNum.AutoSize = true;
 
             this.lblOrderDate.Text = "Дата заказа: —";
             this.lblOrderDate.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
-            this.lblOrderDate.Location = new System.Drawing.Point(320, 200);
+            this.lblOrderDate.Location = new System.Drawing.Point(320, 315);
             this.lblOrderDate.AutoSize = true;
 
             this.lblDeliveryDate.Text = "Дата выполнения: —";
             this.lblDeliveryDate.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
-            this.lblDeliveryDate.Location = new System.Drawing.Point(620, 200);
+            this.lblDeliveryDate.Location = new System.Drawing.Point(620, 315);
             this.lblDeliveryDate.AutoSize = true;
 
-            // ===== Группа КОРЗИНА =====
+            // grpCart
             this.grpCart.Text = "Состав заказа";
             this.grpCart.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
-            this.grpCart.Location = new System.Drawing.Point(20, 235);
+            this.grpCart.Location = new System.Drawing.Point(20, 350);
             this.grpCart.Size = new System.Drawing.Size(950, 250);
             this.grpCart.Controls.Add(this.dgvCart);
 
@@ -170,47 +224,47 @@
             this.dgvCart.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
                 this.colArticle, this.colName, this.colQty, this.colPrice});
 
-            // ===== СТАТУС =====
+            // Статус
             this.lblStatusLabel.Text = "Статус заказа";
             this.lblStatusLabel.Font = new System.Drawing.Font("Comic Sans MS", 10F);
-            this.lblStatusLabel.Location = new System.Drawing.Point(20, 500);
+            this.lblStatusLabel.Location = new System.Drawing.Point(20, 615);
             this.lblStatusLabel.AutoSize = true;
 
             this.lblStatus.Text = "—";
             this.lblStatus.Font = new System.Drawing.Font("Comic Sans MS", 11F, System.Drawing.FontStyle.Bold);
-            this.lblStatus.Location = new System.Drawing.Point(20, 525);
+            this.lblStatus.Location = new System.Drawing.Point(20, 640);
             this.lblStatus.AutoSize = true;
             this.lblStatus.BackColor = System.Drawing.Color.FromArgb(204, 255, 204);
             this.lblStatus.Padding = new System.Windows.Forms.Padding(10, 5, 10, 5);
             this.lblStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 
-            // ===== СУММЫ =====
+            // Суммы
             this.lblSumNoDisc.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
-            this.lblSumNoDisc.Location = new System.Drawing.Point(560, 500);
+            this.lblSumNoDisc.Location = new System.Drawing.Point(560, 615);
             this.lblSumNoDisc.AutoSize = true;
 
             this.lblDiscPercent.Font = new System.Drawing.Font("Comic Sans MS", 10F);
-            this.lblDiscPercent.Location = new System.Drawing.Point(560, 525);
+            this.lblDiscPercent.Location = new System.Drawing.Point(560, 640);
             this.lblDiscPercent.AutoSize = true;
 
             this.lblDiscSum.Font = new System.Drawing.Font("Comic Sans MS", 10F);
-            this.lblDiscSum.Location = new System.Drawing.Point(560, 550);
+            this.lblDiscSum.Location = new System.Drawing.Point(560, 665);
             this.lblDiscSum.AutoSize = true;
 
             this.lblSumTotal.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
-            this.lblSumTotal.Location = new System.Drawing.Point(560, 575);
+            this.lblSumTotal.Location = new System.Drawing.Point(560, 690);
             this.lblSumTotal.AutoSize = true;
 
-            // ===== ТРЕБОВАНИЕ =====
+            // lblReq
             this.lblReq.Text = "Для доступа к оформлению чека\nнеобходимо сменить статус на выполнен";
             this.lblReq.Font = new System.Drawing.Font("Comic Sans MS", 9F);
-            this.lblReq.Location = new System.Drawing.Point(20, 570);
+            this.lblReq.Location = new System.Drawing.Point(20, 685);
             this.lblReq.AutoSize = true;
 
-            // ===== КНОПКИ =====
+            // Кнопки
             this.btnCheck.Text = "Оформить чек";
             this.btnCheck.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
-            this.btnCheck.Location = new System.Drawing.Point(20, 630);
+            this.btnCheck.Location = new System.Drawing.Point(20, 745);
             this.btnCheck.Size = new System.Drawing.Size(260, 40);
             this.btnCheck.BackColor = System.Drawing.Color.FromArgb(204, 255, 204);
             this.btnCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -218,14 +272,14 @@
 
             this.btnClose.Text = "Закрыть просмотр";
             this.btnClose.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Bold);
-            this.btnClose.Location = new System.Drawing.Point(700, 630);
+            this.btnClose.Location = new System.Drawing.Point(700, 745);
             this.btnClose.Size = new System.Drawing.Size(270, 40);
             this.btnClose.BackColor = System.Drawing.Color.FromArgb(255, 204, 204);
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
 
-            // ===== OrderViewForm =====
-            this.ClientSize = new System.Drawing.Size(990, 690);
+            // OrderViewForm
+            this.ClientSize = new System.Drawing.Size(990, 810);
             this.Controls.Add(this.picLogo);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.grpClient);

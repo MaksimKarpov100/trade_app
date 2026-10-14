@@ -1,8 +1,5 @@
-C:\Users\Пользователь\source\repos\trade_app\bin\Debug\trade_app.exe.config
-C:\Users\Пользователь\source\repos\trade_app\bin\Debug\trade_app.exe
-C:\Users\Пользователь\source\repos\trade_app\bin\Debug\trade_app.pdb
-C:\Users\Пользователь\source\repos\trade_app\bin\Debug\MySql.Data.dll
-C:\Users\Пользователь\source\repos\trade_app\bin\Debug\MySql.Data.xml
+C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.csproj.AssemblyReference.cache
+C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.Forms.BackupForm.resources
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.Forms.CartForm.resources
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.Forms.CheckoutForm.resources
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.Forms.ImportForm.resources
@@ -16,8 +13,11 @@ C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.For
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.Properties.Resources.resources
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.csproj.GenerateResource.cache
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.csproj.CoreCompileInputs.cache
+C:\Users\Пользователь\source\repos\trade_app\bin\Debug\trade_app.exe.config
+C:\Users\Пользователь\source\repos\trade_app\bin\Debug\trade_app.exe
+C:\Users\Пользователь\source\repos\trade_app\bin\Debug\trade_app.pdb
+C:\Users\Пользователь\source\repos\trade_app\bin\Debug\MySql.Data.dll
+C:\Users\Пользователь\source\repos\trade_app\bin\Debug\MySql.Data.xml
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.csproj.CopyComplete
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.exe
 C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.pdb
-C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.csproj.AssemblyReference.cache
-C:\Users\Пользователь\source\repos\trade_app\obj\Debug\trade_app.Forms.BackupForm.resources

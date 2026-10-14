@@ -46,7 +46,7 @@
             this.cmbTable.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cmbTable.Location = new System.Drawing.Point(120, 17);
             this.cmbTable.Name = "cmbTable";
-            this.cmbTable.Size = new System.Drawing.Size(400, 25);
+            this.cmbTable.Size = new System.Drawing.Size(420, 25);
             this.cmbTable.TabIndex = 0;
             // 
             // lblPath
@@ -65,14 +65,14 @@
             this.txtPath.Location = new System.Drawing.Point(120, 57);
             this.txtPath.Name = "txtPath";
             this.txtPath.ReadOnly = true;
-            this.txtPath.Size = new System.Drawing.Size(320, 24);
+            this.txtPath.Size = new System.Drawing.Size(340, 24);
             this.txtPath.TabIndex = 1;
             // 
             // btnChoose
             // 
             this.btnChoose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(255)))), ((int)(((byte)(204)))));
             this.btnChoose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnChoose.Location = new System.Drawing.Point(450, 56);
+            this.btnChoose.Location = new System.Drawing.Point(470, 56);
             this.btnChoose.Name = "btnChoose";
             this.btnChoose.Size = new System.Drawing.Size(70, 27);
             this.btnChoose.TabIndex = 2;
@@ -87,9 +87,9 @@
             this.btnImport.Font = new System.Drawing.Font("Comic Sans MS", 9F, System.Drawing.FontStyle.Bold);
             this.btnImport.Location = new System.Drawing.Point(20, 110);
             this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(250, 35);
+            this.btnImport.Size = new System.Drawing.Size(260, 40);
             this.btnImport.TabIndex = 3;
-            this.btnImport.Text = "Импортировать выбранный";
+            this.btnImport.Text = "Импортировать из этой папки";
             this.btnImport.UseVisualStyleBackColor = false;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
@@ -98,11 +98,11 @@
             this.btnImportAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(255)))), ((int)(((byte)(102)))));
             this.btnImportAll.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnImportAll.Font = new System.Drawing.Font("Comic Sans MS", 9F, System.Drawing.FontStyle.Bold);
-            this.btnImportAll.Location = new System.Drawing.Point(280, 110);
+            this.btnImportAll.Location = new System.Drawing.Point(290, 110);
             this.btnImportAll.Name = "btnImportAll";
-            this.btnImportAll.Size = new System.Drawing.Size(260, 35);
+            this.btnImportAll.Size = new System.Drawing.Size(260, 40);
             this.btnImportAll.TabIndex = 4;
-            this.btnImportAll.Text = "Импортировать все CSV из папки";
+            this.btnImportAll.Text = "Импортировать всё из папки...";
             this.btnImportAll.UseVisualStyleBackColor = false;
             this.btnImportAll.Click += new System.EventHandler(this.btnImportAll_Click);
             // 
@@ -110,9 +110,9 @@
             // 
             this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(255)))), ((int)(((byte)(204)))));
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Location = new System.Drawing.Point(440, 176);
+            this.btnClose.Location = new System.Drawing.Point(440, 177);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(100, 32);
+            this.btnClose.Size = new System.Drawing.Size(110, 35);
             this.btnClose.TabIndex = 6;
             this.btnClose.Text = "Закрыть";
             this.btnClose.UseVisualStyleBackColor = false;
@@ -121,7 +121,7 @@
             // ImportForm
             // 
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(560, 241);
+            this.ClientSize = new System.Drawing.Size(580, 281);
             this.Controls.Add(this.lblTable);
             this.Controls.Add(this.cmbTable);
             this.Controls.Add(this.lblPath);
@@ -131,7 +131,7 @@
             this.Controls.Add(this.btnImportAll);
             this.Controls.Add(this.btnClose);
             this.Font = new System.Drawing.Font("Comic Sans MS", 9F);
-            this.MinimumSize = new System.Drawing.Size(560, 280);
+            this.MinimumSize = new System.Drawing.Size(580, 320);
             this.Name = "ImportForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Импорт данных из CSV";

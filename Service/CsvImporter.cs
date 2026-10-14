@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using MySql.Data.MySqlClient;
 
@@ -9,16 +8,15 @@ namespace trade_app.Services
 {
     public static class CsvImporter
     {
+        // User и Role — исключены: их нельзя терять при импорте CSV
         public static readonly string[] TableOrder = new string[]
         {
-            "Role",
             "OrderStatus",
             "Unit",
             "Category",
             "Manufacturer",
             "Supplier",
             "ProductStatus",
-            "User",
             "PickupPoint",
             "Product",
             "Order",
@@ -45,6 +43,7 @@ namespace trade_app.Services
             {
                 new MySqlCommand("SET FOREIGN_KEY_CHECKS=0", conn).ExecuteNonQuery();
 
+                // Очистка — в обратном порядке
                 for (int i = TableOrder.Length - 1; i >= 0; i--)
                 {
                     string csv = Path.Combine(folder, TableOrder[i] + ".csv");
@@ -61,6 +60,7 @@ namespace trade_app.Services
                     }
                 }
 
+                // Импорт — в прямом порядке
                 for (int i = 0; i < TableOrder.Length; i++)
                 {
                     string table = TableOrder[i];
@@ -79,6 +79,11 @@ namespace trade_app.Services
                     }
                 }
 
+                // ==== ВОССТАНАВЛИВАЕМ СИСТЕМНЫЕ РОЛИ И ПОЛЬЗОВАТЕЛЕЙ ====
+                RestoreSystemRoles(conn);
+                RestoreSystemUsers(conn);
+                // =======================================================
+
                 new MySqlCommand("SET FOREIGN_KEY_CHECKS=1", conn).ExecuteNonQuery();
             }
             finally { conn.Close(); }
@@ -86,6 +91,46 @@ namespace trade_app.Services
             return result;
         }
 
+        // ============================================================
+        //  РОЛИ: гарантируем, что 1=Клиент, 2=Менеджер, 3=Администратор
+        // ============================================================
+        private static void RestoreSystemRoles(MySqlConnection conn)
+        {
+            // убираем возможные конфликты по имени, оставшиеся от CSV
+            new MySqlCommand(
+                "DELETE FROM Role WHERE RoleName IN " +
+                "('Клиент','Менеджер','Администратор')", conn).ExecuteNonQuery();
+
+            new MySqlCommand(
+                "INSERT INTO Role (RoleID, RoleName) VALUES " +
+                "(1, 'Клиент'), " +
+                "(2, 'Менеджер'), " +
+                "(3, 'Администратор')", conn).ExecuteNonQuery();
+        }
+
+        // ============================================================
+        //  ПОЛЬЗОВАТЕЛИ: admin/admin, manager/manager, user/user
+        // ============================================================
+        private static void RestoreSystemUsers(MySqlConnection conn)
+        {
+            // Удаляем три системные учётки, если они уже есть
+            new MySqlCommand(
+                "DELETE FROM User WHERE UserLogin IN ('admin','manager','user')", conn)
+                .ExecuteNonQuery();
+
+            // Вставляем заново с паролем = логину
+            string sql =
+                "INSERT INTO User " +
+                "(UserSurname, UserName, UserPatronymic, UserLogin, UserPassword, UserRole) VALUES " +
+                "('Админ',  'Админ', 'Админович', 'admin',   'admin',   3), " +
+                "('Петров', 'Пётр',  'Петрович',  'manager', 'manager', 2), " +
+                "('Иванов', 'Иван',  'Иванович',  'user',    'user',    1)";
+            new MySqlCommand(sql, conn).ExecuteNonQuery();
+        }
+
+        // ============================================================
+        //  Ниже — без изменений
+        // ============================================================
         private static int ImportTable(MySqlConnection conn, string table, string path)
         {
             string[] lines = File.ReadAllLines(path, Encoding.UTF8);
@@ -105,11 +150,8 @@ namespace trade_app.Services
                 StringBuilder pars = new StringBuilder();
                 for (int j = 0; j < headers.Length; j++)
                 {
-                    if (j > 0) 
-                    {
-                        cols.Append(","); pars.Append(","); 
-                    }
-                    cols.Append("`").Append(headers[j]).Append("`"); 
+                    if (j > 0) { cols.Append(","); pars.Append(","); }
+                    cols.Append("`").Append(headers[j]).Append("`");
                     pars.Append("@p").Append(j);
                 }
 

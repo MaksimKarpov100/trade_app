@@ -81,6 +81,18 @@ namespace trade_app.Forms
                 MessageBox.Show("Выберите пункт выдачи.");
                 return;
             }
+            if (txtPhone.Text.Trim() == "")
+            {
+                MessageBox.Show("Введите контактный телефон.");
+                txtPhone.Focus();
+                return;
+            }
+            if (txtAddress.Text.Trim() == "")
+            {
+                MessageBox.Show("Введите адрес проживания.");
+                txtAddress.Focus();
+                return;
+            }
 
             try
             {
@@ -94,14 +106,22 @@ namespace trade_app.Forms
                 int days = Cart.DeliveryDays();
                 DateTime deliveryDate = DateTime.Now.AddDays(days);
 
-                string sqlOrder = "INSERT INTO `Order` " +
-                    "(OrderID, OrderStatusID, OrderDate, OrderDeliveryDate, OrderPickupPointID, OrderClientName, OrderCode) " +
-                    "VALUES (@id, 1, NOW(), @delivery, @pickup, @fio, @code)";
+                string sqlOrder =
+                    "INSERT INTO `Order` " +
+                    "(OrderID, OrderStatusID, OrderDate, OrderDeliveryDate, " +
+                    " OrderPickupPointID, OrderClientName, OrderClientBirthDate, " +
+                    " OrderClientPhone, OrderClientAddress, OrderCode) " +
+                    "VALUES (@id, 1, NOW(), @delivery, @pickup, @fio, @birth, @phone, @address, @code)";
+
                 MySqlCommand cmdOrder = new MySqlCommand(sqlOrder, conn);
                 cmdOrder.Parameters.AddWithValue("@id", newOrderId);
                 cmdOrder.Parameters.AddWithValue("@delivery", deliveryDate);
                 cmdOrder.Parameters.AddWithValue("@pickup", cmbPickupPoint.SelectedValue);
                 cmdOrder.Parameters.AddWithValue("@fio", cmbFio.Text.Trim());
+                cmdOrder.Parameters.AddWithValue("@birth",
+                    dtpBirth.Checked ? (object)dtpBirth.Value.Date : DBNull.Value);
+                cmdOrder.Parameters.AddWithValue("@phone", txtPhone.Text.Trim());
+                cmdOrder.Parameters.AddWithValue("@address", txtAddress.Text.Trim());
                 cmdOrder.Parameters.AddWithValue("@code", receiveCode);
                 cmdOrder.ExecuteNonQuery();
 

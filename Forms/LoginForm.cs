@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
-using trade_app.Services;  
+using trade_app.Services;
 
 namespace trade_app.Forms
 {
@@ -114,11 +114,14 @@ namespace trade_app.Forms
 
                 if (reader.Read())
                 {
-                    string fio = reader["UserSurname"] + " " + reader["UserName"] + " " + reader["UserPatronymic"];
+                    string fio = reader["UserSurname"] + " " +
+                                 reader["UserName"] + " " +
+                                 reader["UserPatronymic"];
                     string role = reader["RoleName"].ToString();
                     reader.Close();
                     conn.Close();
 
+                    // ===== ПР39: авто-бэкап при входе =====
                     try
                     {
                         BackupService.CreateAutoBackup();
